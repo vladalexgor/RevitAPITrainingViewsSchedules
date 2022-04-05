@@ -15,53 +15,39 @@ namespace RevitAPITrainingViewsSchedules
         private ExternalCommandData _commandData;
         private Document _doc;
 
-        public List<ViewPlan> Views { get; } = new List<ViewPlan>();
-        public List<Category> Categories { get; } = new List<Category>();
-        public DelegateCommand HideCommand { get; }
-        public DelegateCommand TempHideCommand { get; }
+        public List<ViewPlan> Views { get; }
+        public List<ParameterFilterElement> Filters { get; }
+        public DelegateCommand AddFilterCommand { get; }
 
         public MainViewViewModel(ExternalCommandData commandData)
         {
             _commandData = commandData;
             _doc = _commandData.Application.ActiveUIDocument.Document;
             Views = ViewsUtils.GetFloorPlanViews(_doc);
-            Categories = CategoryUtils.GetCategories(_doc);
-            HideCommand = new DelegateCommand(OnHideCommand);
-            TempHideCommand = new DelegateCommand(OnTempHideCommand);
+            Filters = FilterUtils.GetFilters(_doc);
+            AddFilterCommand = new DelegateCommand(OnAddFilterCommand);
         }
 
-        private void OnTempHideCommand()
+        public ParameterFilterElement SelectedFilter { get; set; }
+
+        private void OnAddFilterCommand()
         {
-            if (SelectedViewPlan == null || SelectedCategory == null)
+            if (SelectedViewPlan == null || SelectedFilter == null)
                 return;
-            using (var ts = new Transaction(_doc, "Save changes"))
+            using (var ts = new Transaction(_doc, "Set filter"))
             {
                 ts.Start();
-                SelectedViewPlan.HideCategoryTemporary(SelectedCategory.Id);
+                SelectedViewPlan.AddFilter(SelectedFilter.Id);
+                OverrideGraphicSettings overrideGraphicSettings = SelectedViewPlan.GetFilterOverrides(SelectedFilter.Id);
+                overrideGraphicSettings.SetProjectionLineColor(new Color(255, 0, 0));
+                SelectedViewPlan.SetFilterOverrides(SelectedFilter.Id, overrideGraphicSettings);
                 ts.Commit();
             }
 
             RaiseCloseRequest();
         }
 
-        public ViewPlan SelectedViewPlan { get; set; }
-
-        public Category SelectedCategory { get; set; }
-
-        private void OnHideCommand()
-        {
-            if (SelectedViewPlan == null || SelectedCategory == null)
-                return;
-
-            using (var ts = new Transaction(_doc, "Save changes"))
-            {
-                ts.Start();
-                SelectedViewPlan.SetCategoryHidden(SelectedCategory.Id, hide: true);
-                ts.Commit();
-            }
-
-            RaiseCloseRequest();
-        }
+        public ViewPlan SelectedViewPlan { get; set; }  
 
         public event EventHandler CloseRequest;
         private void RaiseCloseRequest()

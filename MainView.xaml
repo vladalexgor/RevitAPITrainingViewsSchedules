@@ -16,21 +16,16 @@
                   DisplayMemberPath="Name"
                   Margin="5"/>
 
-        <Label Content="Выбрать категорию"
+        <Label Content="Выбрать фильтр"
                Margin="5"/>
 
-        <ComboBox ItemsSource="{Binding Categories}"
-                  SelectedValue="{Binding SelectedCategory}"
+        <ComboBox ItemsSource="{Binding Filters}"
+                  SelectedValue="{Binding SelectedFilter}"
                   DisplayMemberPath="Name"
                   Margin="5"/>
 
-        <Button Content="Скрыть категорию"
-                Command="{Binding HideCommand}"
-                Margin="5"
-                Padding="5"/>
-        
-        <Button Content="Временное скрытие"
-                Command="{Binding TempHideCommand}"
+        <Button Content="Добавить фильтр"
+                Command="{Binding AddFilterCommand}"
                 Margin="5"
                 Padding="5"/>
     </StackPanel>
