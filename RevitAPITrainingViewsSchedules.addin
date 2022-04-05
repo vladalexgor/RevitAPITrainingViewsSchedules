@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+	<AddIn Type="Command">
+		<Assembly>"C:\ProgramData\RevitAPI\RevitAPITrainingViewsSchedules.dll"</Assembly>
+		<AddInId>DB281180-4E12-47C1-A8DD-AF9C3B5435CB</AddInId>
+		<FullClassName>RevitAPITrainingViewsSchedules.Main</FullClassName>
+		<VendorId>ADSK</VendorId>
+		<Text>Тема 7. Виды и спецификации</Text>
+	</AddIn>
+</RevitAddIns>
