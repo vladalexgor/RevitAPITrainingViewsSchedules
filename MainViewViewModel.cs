@@ -18,6 +18,7 @@ namespace RevitAPITrainingViewsSchedules
         public List<ViewPlan> Views { get; } = new List<ViewPlan>();
         public List<Category> Categories { get; } = new List<Category>();
         public DelegateCommand HideCommand { get; }
+        public DelegateCommand TempHideCommand { get; }
 
         public MainViewViewModel(ExternalCommandData commandData)
         {
@@ -26,6 +27,21 @@ namespace RevitAPITrainingViewsSchedules
             Views = ViewsUtils.GetFloorPlanViews(_doc);
             Categories = CategoryUtils.GetCategories(_doc);
             HideCommand = new DelegateCommand(OnHideCommand);
+            TempHideCommand = new DelegateCommand(OnTempHideCommand);
+        }
+
+        private void OnTempHideCommand()
+        {
+            if (SelectedViewPlan == null || SelectedCategory == null)
+                return;
+            using (var ts = new Transaction(_doc, "Save changes"))
+            {
+                ts.Start();
+                SelectedViewPlan.HideCategoryTemporary(SelectedCategory.Id);
+                ts.Commit();
+            }
+
+            RaiseCloseRequest();
         }
 
         public ViewPlan SelectedViewPlan { get; set; }
@@ -40,9 +56,7 @@ namespace RevitAPITrainingViewsSchedules
             using (var ts = new Transaction(_doc, "Save changes"))
             {
                 ts.Start();
-
                 SelectedViewPlan.SetCategoryHidden(SelectedCategory.Id, hide: true);
-
                 ts.Commit();
             }
 

@@ -28,5 +28,10 @@
                 Command="{Binding HideCommand}"
                 Margin="5"
                 Padding="5"/>
+        
+        <Button Content="Временное скрытие"
+                Command="{Binding TempHideCommand}"
+                Margin="5"
+                Padding="5"/>
     </StackPanel>
 </Window>
